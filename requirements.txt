@@ -10,4 +10,7 @@ pytest-asyncio==1.0.0
 pytest-httpx==0.35.0
 respx==0.22.0
 anyio==4.9.0
+<<<<<<< HEAD
 telethon==1.37.0
+=======
+>>>>>>> bc45bdcd3a030c6986506cfcb8f3301db22d6c75
