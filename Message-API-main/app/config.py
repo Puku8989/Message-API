@@ -5,7 +5,13 @@ at startup, ensuring fast-fail behaviour when credentials are missing.
 """
 
 from functools import lru_cache
+<<<<<<< HEAD
+from typing import Any
 
+from pydantic import field_validator
+=======
+
+>>>>>>> bc45bdcd3a030c6986506cfcb8f3301db22d6c75
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -30,10 +36,44 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
+<<<<<<< HEAD
+    # Telegram (Bot API)
+    telegram_bot_token: str
+    telegram_chat_id: str
+
+    # Telegram (Client API / Telethon) — optional, for phone-number messaging
+    telegram_api_id: int | None = None
+    telegram_api_hash: str | None = None
+    telegram_phone: str | None = None
+
+    @field_validator("telegram_api_id", mode="before")
+    @classmethod
+    def _coerce_api_id(cls, v: Any) -> int | None:
+        """Parse api_id as int; return None for placeholder strings."""
+        if v is None:
+            return None
+        try:
+            return int(v)
+        except (ValueError, TypeError):
+            return None
+
+    @field_validator("telegram_api_hash", "telegram_phone", mode="before")
+    @classmethod
+    def _blank_placeholder(cls, v: Any) -> str | None:
+        """Treat obvious placeholder values as None."""
+        if v is None:
+            return None
+        s = str(v).strip()
+        if not s or s.startswith("your_"):
+            return None
+        return s
+
+=======
     # Telegram
     telegram_bot_token: str
     telegram_chat_id: str
 
+>>>>>>> bc45bdcd3a030c6986506cfcb8f3301db22d6c75
     # WhatsApp
     whatsapp_access_token: str
     whatsapp_phone_number_id: str
