@@ -1,0 +1,117 @@
+{
+  "info": {
+    "name": "Message API",
+    "description": "Collection for the Message API — send text messages to Telegram and WhatsApp.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Send Telegram Message",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"platform\": \"telegram\",\n  \"message\": \"Hello from the Message API! 🚀\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/send",
+          "host": ["{{base_url}}"],
+          "path": ["send"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Send WhatsApp Message",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"platform\": \"whatsapp\",\n  \"message\": \"Hello from the Message API! 🚀\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/send",
+          "host": ["{{base_url}}"],
+          "path": ["send"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Invalid Platform (expect 422)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"platform\": \"signal\",\n  \"message\": \"This should fail\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/send",
+          "host": ["{{base_url}}"],
+          "path": ["send"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Empty Message (expect 422)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"platform\": \"telegram\",\n  \"message\": \"\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/send",
+          "host": ["{{base_url}}"],
+          "path": ["send"]
+        }
+      },
+      "response": []
+    }
+  ]
+}
