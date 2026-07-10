@@ -17,7 +17,6 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.routes import router
-from app.telegram_client import connect as telethon_connect, disconnect as telethon_disconnect
 from app.utils import get_logger, setup_logging
 
 # Resolve the static directory relative to the project root
@@ -38,13 +37,8 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     logger = get_logger(__name__)
     logger.info("🚀 Message API is starting up")
 
-    # Connect the Telethon client (no-op if credentials are not configured)
-    await telethon_connect()
-
     yield
 
-    # Disconnect the Telethon client
-    await telethon_disconnect()
     logger.info("🛑 Message API is shutting down")
 
 

@@ -20,7 +20,6 @@ def _mock_settings() -> Settings:
     """Return a ``Settings`` instance with dummy credentials."""
     return Settings(
         telegram_bot_token="test-bot-token",
-        telegram_chat_id="123456789",
         whatsapp_access_token="test-access-token",
         whatsapp_phone_number_id="000000000000",
         whatsapp_recipient_number="+10000000000",
@@ -32,11 +31,18 @@ def _mock_settings() -> Settings:
 
 @pytest.fixture(autouse=True)
 def _patch_settings(_mock_settings: Settings):
-    """Auto-patch ``get_settings`` for every test in the suite."""
-    with patch("app.config.get_settings", return_value=_mock_settings):
-        # Also patch in each module that imports get_settings at module level
-        with patch("app.utils.get_settings", return_value=_mock_settings):
-            yield
+    """Auto-patch ``get_settings`` for every test in the suite.
+
+    Every module that does ``from app.config import get_settings`` gets
+    its own local reference, so we must patch each one individually.
+    """
+    with (
+        patch("app.config.get_settings", return_value=_mock_settings),
+        patch("app.utils.get_settings", return_value=_mock_settings),
+        patch("app.telegram.get_settings", return_value=_mock_settings),
+        patch("app.whatsapp.get_settings", return_value=_mock_settings),
+    ):
+        yield
 
 
 @pytest.fixture()

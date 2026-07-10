@@ -59,7 +59,7 @@ async def send_message(request: MessageRequest) -> MessageResponse:
 
     try:
         if request.platform is Platform.BOTH:
-            # Resolve per-platform recipients, falling back to generic
+            # Resolve per-platform recipients
             tg_chat = (
                 request.telegram_chat_id
                 or request.recipient
@@ -68,6 +68,16 @@ async def send_message(request: MessageRequest) -> MessageResponse:
                 request.whatsapp_recipient
                 or request.recipient
             )
+
+            if not tg_chat:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=(
+                        "A Telegram chat_id is required. Provide it via "
+                        "'telegram_chat_id' or 'recipient' in the request body."
+                    ),
+                )
+
             # Fire both simultaneously
             tg_result, wa_result = await asyncio.gather(
                 send_telegram_message(
@@ -84,9 +94,19 @@ async def send_message(request: MessageRequest) -> MessageResponse:
             platform_label = Platform.BOTH
 
         elif request.platform is Platform.TELEGRAM:
+            tg_chat = request.recipient
+            if not tg_chat:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=(
+                        "A Telegram chat_id is required. Provide it via "
+                        "'recipient' in the request body (e.g. a numeric "
+                        "chat ID or @username)."
+                    ),
+                )
             result = await send_telegram_message(
                 request.message,
-                chat_id=request.recipient,
+                chat_id=tg_chat,
             )
             confirmation = "Message sent via Telegram successfully."
             platform_label = Platform.TELEGRAM

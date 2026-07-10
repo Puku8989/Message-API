@@ -1,12 +1,17 @@
-"""Telegram messaging service — smart routing.
+"""Telegram messaging service — Bot API only.
 
-Automatically chooses the right transport based on the recipient format:
+All outgoing messages are sent through the Telegram Bot API using
+the BotFather token.  The sender will always appear as the bot.
 
-- **Phone number** (starts with ``+``) → Telethon Client API
-- **Chat ID** (numeric) or ``@username`` → Bot API (``sendMessage``)
+The ``chat_id`` (recipient) must be provided per-request — there is
+no default from the environment.
 
-Both transports coexist; the Bot API path remains unchanged from the
-original implementation.
+Supported recipient formats:
+- Numeric chat ID  (e.g. ``"123456789"``)
+- ``@username``    (e.g. ``"@mychannel"``)
+
+Phone-number recipients are **not** supported by the Bot API and
+will return a clear error.
 """
 
 from __future__ import annotations
@@ -17,38 +22,27 @@ from typing import Any
 import httpx
 
 from app.config import get_settings
-from app.telegram_client import (
-    get_chat_id_by_phone,
-    is_available as telethon_available,
-    send_telegram_message_by_phone,
-)
 from app.utils import create_http_client, get_logger, with_retry
 
 logger = get_logger(__name__)
 
 TELEGRAM_API_BASE = "https://api.telegram.org"
 
-# Simple pattern: starts with + followed by digits (E.164 phone number)
+# Pattern to detect E.164 phone numbers so we can return a helpful error.
 _PHONE_RE = re.compile(r"^\+\d{7,15}$")
-
-
-def _looks_like_phone(recipient: str) -> bool:
-    """Return ``True`` if *recipient* looks like an E.164 phone number."""
-    return bool(_PHONE_RE.match(recipient))
 
 
 @with_retry()
 async def _send_via_bot_api(
     message: str,
-    chat_id: str | None = None,
+    chat_id: str,
     parse_mode: str | None = None,
 ) -> dict[str, Any]:
     """Deliver a text message through the Telegram Bot API.
 
     Args:
         message: The text content to send.
-        chat_id: Optional chat ID override. Falls back to the
-            ``TELEGRAM_CHAT_ID`` environment variable when ``None``.
+        chat_id: The target chat ID, @username, or numeric ID.
         parse_mode: Optional formatting mode (``"HTML"``, ``"Markdown"``,
             or ``"MarkdownV2"``). Defaults to ``None`` (plain text).
 
@@ -59,10 +53,16 @@ async def _send_via_bot_api(
         httpx.HTTPStatusError: If Telegram returns a non-2xx status after
             all retry attempts are exhausted.
         httpx.TimeoutException: If the request times out after all retries.
-        ValueError: If the Telegram API response indicates failure.
+        ValueError: If no chat_id is provided or the Telegram API response
+            indicates failure.
     """
+    if not chat_id:
+        raise ValueError(
+            "A chat_id is required. Provide a numeric chat ID or @username "
+            "in the request body."
+        )
     settings = get_settings()
-    target_chat = chat_id or settings.telegram_chat_id
+    target_chat = chat_id
     url = f"{TELEGRAM_API_BASE}/bot{settings.telegram_bot_token}/sendMessage"
     payload: dict[str, Any] = {
         "chat_id": target_chat,
@@ -95,55 +95,43 @@ async def _send_via_bot_api(
 
 async def send_telegram_message(
     message: str,
-    chat_id: str | None = None,
+    chat_id: str,
     parse_mode: str | None = None,
 ) -> dict[str, Any]:
-    """Send a Telegram message, auto-selecting the transport.
+    """Send a Telegram message via the Bot API.
 
-    If *chat_id* looks like an E.164 phone number (``+<digits>``), the
-    message is first resolved to a chat ID and sent via the Bot API.
-    If the Bot API fails (e.g. user hasn't started the bot), it falls
-    back to the Telethon Client API.  Otherwise it falls
-    through to the standard Bot API.
+    The message is always sent using the bot token, so the sender will
+    appear as the bot (not a personal account).
 
     Args:
         message: The text content to send.
-        chat_id: Optional recipient override — chat ID, @username, or
-            phone number in E.164 format.
-        parse_mode: Optional formatting mode (Bot API only).
+        chat_id: The target recipient — a numeric chat ID or ``@username``.
+            This is required and must be provided in the request body.
+        parse_mode: Optional formatting mode (``"HTML"``, ``"Markdown"``,
+            or ``"MarkdownV2"``).
 
     Returns:
-        The parsed JSON response / delivery metadata.
-    """
-    # Determine if we should route through Telethon
-    if chat_id and _looks_like_phone(chat_id):
-        if not telethon_available():
-            raise RuntimeError(
-                f"Recipient '{chat_id}' looks like a phone number but the "
-                "Telethon client is not available. Ensure TELEGRAM_API_ID, "
-                "TELEGRAM_API_HASH, and TELEGRAM_PHONE are set in .env and "
-                "run 'python auth_telethon.py' to authenticate."
-            )
-        
-        logger.info("Phone number detected: %s. Attempting to resolve and send via Bot API...", chat_id)
-        
-        try:
-            resolved_chat_id = await get_chat_id_by_phone(chat_id)
-            logger.info("Resolved phone %s to chat_id %s", chat_id, resolved_chat_id)
-            
-            # Try to send via Bot API
-            return await _send_via_bot_api(message, chat_id=str(resolved_chat_id), parse_mode=parse_mode)
-        except (ValueError, httpx.HTTPError) as exc:
-            logger.warning(
-                "Bot API failed for resolved chat_id (bot blocked or not started?): %s. "
-                "Falling back to Telethon Client API...",
-                exc,
-            )
-            return await send_telegram_message_by_phone(chat_id, message)
-        except Exception as exc:
-            # Maybe get_chat_id_by_phone failed or something unexpected happened
-            logger.error("Error resolving or sending via Bot API: %s. Falling back to Telethon.", exc)
-            return await send_telegram_message_by_phone(chat_id, message)
+        The parsed JSON response from Telegram.
 
-    # Default: Bot API
+    Raises:
+        ValueError: If the recipient is a phone number (unsupported by
+            the Bot API), if no chat_id is provided, or if the Telegram
+            API response indicates failure.
+        httpx.HTTPStatusError: On non-2xx upstream responses.
+        httpx.TimeoutException: On upstream timeouts.
+    """
+    # Reject phone-number recipients with a clear explanation.
+    if chat_id and _PHONE_RE.match(chat_id):
+        raise ValueError(
+            f"Recipient '{chat_id}' is a phone number.  The Telegram Bot API "
+            "does not support sending messages by phone number.  Please use a "
+            "numeric chat_id or @username instead.  The recipient must have "
+            "started the bot (sent /start) at least once."
+        )
+
+    # Normalise chat ID: auto-prepend '@' for alphabetical usernames if missing
+    chat_id = chat_id.strip()
+    if not chat_id.lstrip('-').isdigit() and not chat_id.startswith('@'):
+        chat_id = f"@{chat_id}"
+
     return await _send_via_bot_api(message, chat_id=chat_id, parse_mode=parse_mode)

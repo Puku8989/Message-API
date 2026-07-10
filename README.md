@@ -89,7 +89,6 @@ Edit `.env`:
 
 ```env
 TELEGRAM_BOT_TOKEN=7123456789:AAF...your-token
-TELEGRAM_CHAT_ID=123456789
 
 WHATSAPP_ACCESS_TOKEN=EAAG...your-token
 WHATSAPP_PHONE_NUMBER_ID=100000000000000
@@ -126,8 +125,9 @@ Send a message to Telegram or WhatsApp.
 
 | Field | Type | Required | Constraints |
 |---|---|---|---|
-| `platform` | string | ✅ | `telegram` or `whatsapp` |
+| `platform` | string | ✅ | `telegram`, `whatsapp`, or `both` |
 | `message` | string | ✅ | 1 – 4096 characters |
+| `recipient` | string | For Telegram | Chat ID, @username, or phone number |
 
 **Success Response (200):**
 
@@ -220,7 +220,6 @@ Tests run entirely offline — all external API calls are mocked.
 | Variable | Required | Default | Description |
 |---|---|---|---|
 | `TELEGRAM_BOT_TOKEN` | ✅ | — | Bot token from @BotFather |
-| `TELEGRAM_CHAT_ID` | ✅ | — | Target chat/group/channel ID |
 | `WHATSAPP_ACCESS_TOKEN` | ✅ | — | Meta Graph API access token |
 | `WHATSAPP_PHONE_NUMBER_ID` | ✅ | — | Sender phone number ID |
 | `WHATSAPP_RECIPIENT_NUMBER` | ✅ | — | Recipient in E.164 format |
@@ -264,7 +263,7 @@ Client Request
    ```
    https://api.telegram.org/bot<YOUR_TOKEN>/getUpdates
    ```
-5. Find `chat.id` in the response → `TELEGRAM_CHAT_ID`.
+5. Find `chat.id` in the response — use this as the `recipient` in your API requests.
 
 ### WhatsApp
 

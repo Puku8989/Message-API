@@ -37,7 +37,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"platform\": \"telegram\",\n  \"message\": \"Hello from the Message API! 🚀\"\n}"
+          "raw": "{\n  \"platform\": \"telegram\",\n  \"message\": \"Hello from the Message API! 🚀\",\n  \"recipient\": \"YOUR_CHAT_ID_HERE\"\n}"
         },
         "url": {
           "raw": "{{base_url}}/send",

@@ -155,13 +155,13 @@
         const tgRecipient = telegramRecipient.value.trim();
         const waRecipient = whatsappRecipient.value.trim();
 
-        if (selectedPlatform === "telegram" && tgRecipient) {
-            body.recipient = tgRecipient;
+        if (selectedPlatform === "telegram") {
+            // Telegram chat_id is required (no env default)
+            if (tgRecipient) body.recipient = tgRecipient;
         } else if (selectedPlatform === "whatsapp" && waRecipient) {
             body.recipient = waRecipient;
         } else if (selectedPlatform === "both") {
-            // For "both", pass whatsapp number as recipient (used by WhatsApp)
-            // and telegram_chat_id for Telegram
+            // Telegram chat_id is required; WhatsApp falls back to env
             if (tgRecipient) body.telegram_chat_id = tgRecipient;
             if (waRecipient) body.whatsapp_recipient = waRecipient;
         }

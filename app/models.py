@@ -30,9 +30,9 @@ class MessageRequest(BaseModel):
     Attributes:
         platform: Target platform (``telegram``, ``whatsapp``, or ``both``).
         message: The text content to deliver.
-        recipient: Optional recipient override (chat_id for Telegram,
-            phone number in E.164 format for WhatsApp). Falls back to
-            the ``.env`` default when omitted.
+        recipient: Recipient for the message. For Telegram: a chat ID or
+            @username (required). For WhatsApp: a phone number in E.164
+            format (falls back to ``.env`` default when omitted).
     """
 
     platform: Platform = Field(
@@ -50,8 +50,9 @@ class MessageRequest(BaseModel):
     recipient: str | None = Field(
         default=None,
         description=(
-            "Optional recipient override. For Telegram: a chat ID. "
-            "For WhatsApp: a phone number in E.164 format (e.g., +1234567890). "
+            "Recipient for the message. For Telegram: a chat ID or @username "
+            "(required — no env default). For WhatsApp: a phone number in "
+            "E.164 format (e.g., +1234567890; falls back to env default). "
             "When platform is 'both', use telegram_chat_id and "
             "whatsapp_recipient instead for per-platform targeting."
         ),
@@ -60,9 +61,9 @@ class MessageRequest(BaseModel):
     telegram_chat_id: str | None = Field(
         default=None,
         description=(
-            "Optional Telegram chat ID override. Used when platform is "
-            "'both' to target a specific Telegram chat independently of "
-            "the WhatsApp recipient."
+            "Telegram chat ID or @username. Required when platform is "
+            "'both' (there is no env default). Targets the Telegram chat "
+            "independently of the WhatsApp recipient."
         ),
         examples=["123456789", "@username"],
     )
