@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 """Telegram messaging service — smart routing.
 
 Automatically chooses the right transport based on the recipient format:
@@ -8,40 +7,27 @@ Automatically chooses the right transport based on the recipient format:
 
 Both transports coexist; the Bot API path remains unchanged from the
 original implementation.
-=======
-"""Telegram Bot API service.
-
-Sends plain-text messages via the ``sendMessage`` endpoint of the
-official Telegram Bot API using the credentials stored in ``.env``.
->>>>>>> bc45bdcd3a030c6986506cfcb8f3301db22d6c75
 """
 
 from __future__ import annotations
 
-<<<<<<< HEAD
 import re
-=======
->>>>>>> bc45bdcd3a030c6986506cfcb8f3301db22d6c75
 from typing import Any
 
 import httpx
 
 from app.config import get_settings
-<<<<<<< HEAD
 from app.telegram_client import (
     get_chat_id_by_phone,
     is_available as telethon_available,
     send_telegram_message_by_phone,
 )
-=======
->>>>>>> bc45bdcd3a030c6986506cfcb8f3301db22d6c75
 from app.utils import create_http_client, get_logger, with_retry
 
 logger = get_logger(__name__)
 
 TELEGRAM_API_BASE = "https://api.telegram.org"
 
-<<<<<<< HEAD
 # Simple pattern: starts with + followed by digits (E.164 phone number)
 _PHONE_RE = re.compile(r"^\+\d{7,15}$")
 
@@ -56,13 +42,6 @@ async def _send_via_bot_api(
     message: str,
     chat_id: str | None = None,
     parse_mode: str | None = None,
-=======
-
-@with_retry()
-async def send_telegram_message(
-    message: str,
-    chat_id: str | None = None,
->>>>>>> bc45bdcd3a030c6986506cfcb8f3301db22d6c75
 ) -> dict[str, Any]:
     """Deliver a text message through the Telegram Bot API.
 
@@ -70,11 +49,8 @@ async def send_telegram_message(
         message: The text content to send.
         chat_id: Optional chat ID override. Falls back to the
             ``TELEGRAM_CHAT_ID`` environment variable when ``None``.
-<<<<<<< HEAD
         parse_mode: Optional formatting mode (``"HTML"``, ``"Markdown"``,
             or ``"MarkdownV2"``). Defaults to ``None`` (plain text).
-=======
->>>>>>> bc45bdcd3a030c6986506cfcb8f3301db22d6c75
 
     Returns:
         The parsed JSON response from Telegram.
@@ -88,7 +64,6 @@ async def send_telegram_message(
     settings = get_settings()
     target_chat = chat_id or settings.telegram_chat_id
     url = f"{TELEGRAM_API_BASE}/bot{settings.telegram_bot_token}/sendMessage"
-<<<<<<< HEAD
     payload: dict[str, Any] = {
         "chat_id": target_chat,
         "text": message,
@@ -98,16 +73,6 @@ async def send_telegram_message(
 
     logger.info(
         "Sending Telegram message via Bot API to chat_id=%s (length=%d)",
-=======
-    payload = {
-        "chat_id": target_chat,
-        "text": message,
-        "parse_mode": "HTML",
-    }
-
-    logger.info(
-        "Sending Telegram message to chat_id=%s (length=%d)",
->>>>>>> bc45bdcd3a030c6986506cfcb8f3301db22d6c75
         target_chat,
         len(message),
     )
@@ -126,7 +91,6 @@ async def send_telegram_message(
     logger.info("Telegram message delivered successfully (message_id=%s)",
                 data.get("result", {}).get("message_id"))
     return data
-<<<<<<< HEAD
 
 
 async def send_telegram_message(
@@ -183,5 +147,3 @@ async def send_telegram_message(
 
     # Default: Bot API
     return await _send_via_bot_api(message, chat_id=chat_id, parse_mode=parse_mode)
-=======
->>>>>>> bc45bdcd3a030c6986506cfcb8f3301db22d6c75

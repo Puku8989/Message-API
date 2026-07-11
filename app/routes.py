@@ -128,7 +128,6 @@ async def send_message(request: MessageRequest) -> MessageResponse:
             detail=str(exc),
         ) from exc
 
-<<<<<<< HEAD
     except RuntimeError as exc:
         logger.error("Service unavailable: %s", exc)
         raise HTTPException(
@@ -136,8 +135,7 @@ async def send_message(request: MessageRequest) -> MessageResponse:
             detail=str(exc),
         ) from exc
 
-=======
->>>>>>> bc45bdcd3a030c6986506cfcb8f3301db22d6c75
+
     except Exception as exc:  # noqa: BLE001
         logger.exception("Unexpected error sending message")
         raise HTTPException(

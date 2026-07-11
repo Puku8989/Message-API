@@ -5,13 +5,9 @@ at startup, ensuring fast-fail behaviour when credentials are missing.
 """
 
 from functools import lru_cache
-<<<<<<< HEAD
 from typing import Any
 
 from pydantic import field_validator
-=======
-
->>>>>>> bc45bdcd3a030c6986506cfcb8f3301db22d6c75
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -36,7 +32,6 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-<<<<<<< HEAD
     # Telegram (Bot API)
     telegram_bot_token: str
     telegram_chat_id: str
@@ -68,12 +63,6 @@ class Settings(BaseSettings):
             return None
         return s
 
-=======
-    # Telegram
-    telegram_bot_token: str
-    telegram_chat_id: str
-
->>>>>>> bc45bdcd3a030c6986506cfcb8f3301db22d6c75
     # WhatsApp
     whatsapp_access_token: str
     whatsapp_phone_number_id: str
