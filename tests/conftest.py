@@ -21,9 +21,6 @@ def _mock_settings() -> Settings:
     return Settings(
         telegram_bot_token="test-bot-token",
         telegram_chat_id="123456789",
-        whatsapp_access_token="test-access-token",
-        whatsapp_phone_number_id="000000000000",
-        whatsapp_recipient_number="+10000000000",
         api_timeout=5,
         max_retries=1,
         log_level="DEBUG",

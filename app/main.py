@@ -58,7 +58,7 @@ def create_app() -> FastAPI:
         title="Message API",
         description=(
             "A production-ready REST API for sending text messages to "
-            "**Telegram** and **WhatsApp** via their official APIs.\n\n"
+            "**Telegram** via its official Bot API.\n\n"
             "## Quick Start\n"
             "1. Copy `.env.example` → `.env` and fill in your credentials.\n"
             "2. `pip install -r requirements.txt`\n"

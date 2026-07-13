@@ -24,13 +24,10 @@ env/
 .DS_Store
 Thumbs.db
 
-<<<<<<< HEAD
 # Telethon session files
 *.session
 *.session-journal
 
-=======
->>>>>>> bc45bdcd3a030c6986506cfcb8f3301db22d6c75
 # Testing
 .pytest_cache/
 htmlcov/

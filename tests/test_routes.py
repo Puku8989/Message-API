@@ -45,24 +45,6 @@ class TestSendEndpoint:
         assert body["success"] is True
         assert body["platform"] == "telegram"
 
-    async def test_send_whatsapp_success(self, client: AsyncClient) -> None:
-        """Valid WhatsApp request should return 200 with success payload."""
-        mock_result = {"messages": [{"id": "wamid.test"}]}
-        with patch(
-            "app.routes.send_whatsapp_message",
-            new_callable=AsyncMock,
-            return_value=mock_result,
-        ):
-            response = await client.post(
-                "/send",
-                json={"platform": "whatsapp", "message": "Test message"},
-            )
-
-        assert response.status_code == 200
-        body = response.json()
-        assert body["success"] is True
-        assert body["platform"] == "whatsapp"
-
     async def test_invalid_platform_returns_422(self, client: AsyncClient) -> None:
         """An unknown platform should trigger a 422 validation error."""
         response = await client.post(
@@ -79,7 +61,8 @@ class TestSendEndpoint:
         )
         assert response.status_code == 422
 
-    async def test_missing_fields_returns_422(self, client: AsyncClient) -> None:
-        """A request with missing required fields should return 422."""
+    async def test_missing_message_returns_422(self, client: AsyncClient) -> None:
+        """A request with missing message field should return 422."""
         response = await client.post("/send", json={})
         assert response.status_code == 422
+

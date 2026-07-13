@@ -6,15 +6,12 @@ separated from the business logic in the service modules.
 
 from __future__ import annotations
 
-import asyncio
-
 import httpx
 from fastapi import APIRouter, HTTPException, status
 
 from app.models import ErrorResponse, MessageRequest, MessageResponse, Platform
 from app.telegram import send_telegram_message
 from app.utils import get_logger
-from app.whatsapp import send_whatsapp_message
 
 logger = get_logger(__name__)
 
@@ -27,10 +24,8 @@ router = APIRouter()
     status_code=status.HTTP_200_OK,
     summary="Send a message",
     description=(
-        "Dispatch a text message to **Telegram**, **WhatsApp**, or **both** "
-        "simultaneously. The platform is selected via the `platform` field "
-        "in the request body. An optional `recipient` field overrides the "
-        "default recipient configured in `.env`."
+        "Dispatch a text message to **Telegram**. An optional `recipient` "
+        "field overrides the default chat ID configured in `.env`."
     ),
     responses={
         400: {"model": ErrorResponse, "description": "Invalid request body."},
@@ -39,7 +34,7 @@ router = APIRouter()
     },
 )
 async def send_message(request: MessageRequest) -> MessageResponse:
-    """Handle POST /send — dispatch a message to the chosen platform(s).
+    """Handle POST /send — dispatch a message to Telegram.
 
     Args:
         request: Validated :class:`MessageRequest` from the client.
@@ -58,66 +53,29 @@ async def send_message(request: MessageRequest) -> MessageResponse:
     )
 
     try:
-        if request.platform is Platform.BOTH:
-            # Resolve per-platform recipients, falling back to generic
-            tg_chat = (
-                request.telegram_chat_id
-                or request.recipient
-            )
-            wa_number = (
-                request.whatsapp_recipient
-                or request.recipient
-            )
-            # Fire both simultaneously
-            tg_result, wa_result = await asyncio.gather(
-                send_telegram_message(
-                    request.message,
-                    chat_id=tg_chat,
-                ),
-                send_whatsapp_message(
-                    request.message,
-                    recipient_number=wa_number,
-                ),
-            )
-            result = {"telegram": tg_result, "whatsapp": wa_result}
-            confirmation = "Message sent via Telegram and WhatsApp successfully."
-            platform_label = Platform.BOTH
-
-        elif request.platform is Platform.TELEGRAM:
-            result = await send_telegram_message(
-                request.message,
-                chat_id=request.recipient,
-            )
-            confirmation = "Message sent via Telegram successfully."
-            platform_label = Platform.TELEGRAM
-
-        else:
-            result = await send_whatsapp_message(
-                request.message,
-                recipient_number=request.recipient,
-            )
-            confirmation = "Message sent via Whatsapp successfully."
-            platform_label = Platform.WHATSAPP
+        result = await send_telegram_message(
+            request.message,
+            chat_id=request.recipient,
+        )
+        confirmation = "Message sent via Telegram successfully."
 
     except httpx.TimeoutException as exc:
-        logger.error("Timeout contacting %s API: %s", request.platform.value, exc)
+        logger.error("Timeout contacting Telegram API: %s", exc)
         raise HTTPException(
             status_code=status.HTTP_504_GATEWAY_TIMEOUT,
-            detail=f"{request.platform.value.title()} API timed out after retries.",
+            detail="Telegram API timed out after retries.",
         ) from exc
 
     except httpx.HTTPStatusError as exc:
         logger.error(
-            "%s API returned HTTP %s: %s",
-            request.platform.value,
+            "Telegram API returned HTTP %s: %s",
             exc.response.status_code,
             exc.response.text,
         )
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail=(
-                f"{request.platform.value.title()} API returned "
-                f"HTTP {exc.response.status_code}."
+                f"Telegram API returned HTTP {exc.response.status_code}."
             ),
         ) from exc
 
@@ -135,7 +93,6 @@ async def send_message(request: MessageRequest) -> MessageResponse:
             detail=str(exc),
         ) from exc
 
-
     except Exception as exc:  # noqa: BLE001
         logger.exception("Unexpected error sending message")
         raise HTTPException(
@@ -145,7 +102,7 @@ async def send_message(request: MessageRequest) -> MessageResponse:
 
     return MessageResponse(
         success=True,
-        platform=platform_label,
+        platform=Platform.TELEGRAM,
         message=confirmation,
         details=result,
     )

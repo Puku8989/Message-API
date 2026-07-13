@@ -1,5 +1,5 @@
 /* ─────────────────────────────────────────────
-   MESSAGE API DASHBOARD — Premium Design System
+   MESSAGE API DASHBOARD — Clean Design System
    ───────────────────────────────────────────── */
 
 /* ── CSS Custom Properties ───────────────────── */
@@ -19,14 +19,11 @@
     /* Accent colors */
     --telegram-color: #29b6f6;
     --telegram-glow: rgba(41, 182, 246, 0.25);
-    --whatsapp-color: #25d366;
-    --whatsapp-glow: rgba(37, 211, 102, 0.25);
+    --success-color: #4ade80;
+    --error-color: #f87171;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     --gradient-telegram: linear-gradient(135deg, #29b6f6 0%, #0288d1 100%);
-    --gradient-whatsapp: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
-    --gradient-both: linear-gradient(135deg, #29b6f6 0%, #667eea 50%, #25d366 100%);
     --gradient-card: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
 
     /* Borders */
@@ -39,8 +36,6 @@
     --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.4);
     --shadow-lg: 0 16px 64px rgba(0, 0, 0, 0.5);
     --shadow-glow-telegram: 0 0 30px rgba(41, 182, 246, 0.15);
-    --shadow-glow-whatsapp: 0 0 30px rgba(37, 211, 102, 0.15);
-    --shadow-glow-both: 0 0 30px rgba(102, 126, 234, 0.2);
 
     /* Spacing */
     --radius-sm: 8px;
@@ -92,14 +87,14 @@ body {
     position: absolute;
     border-radius: 50%;
     filter: blur(100px);
-    opacity: 0.35;
+    opacity: 0.3;
     animation: orbFloat 20s ease-in-out infinite;
 }
 
 .orb-1 {
     width: 500px;
     height: 500px;
-    background: radial-gradient(circle, #667eea 0%, transparent 70%);
+    background: radial-gradient(circle, #29b6f6 0%, transparent 70%);
     top: -10%;
     left: -5%;
     animation-duration: 22s;
@@ -108,21 +103,11 @@ body {
 .orb-2 {
     width: 400px;
     height: 400px;
-    background: radial-gradient(circle, #764ba2 0%, transparent 70%);
-    top: 50%;
+    background: radial-gradient(circle, #0288d1 0%, transparent 70%);
+    bottom: -5%;
     right: -8%;
     animation-duration: 26s;
     animation-delay: -8s;
-}
-
-.orb-3 {
-    width: 350px;
-    height: 350px;
-    background: radial-gradient(circle, #29b6f6 0%, transparent 70%);
-    bottom: -5%;
-    left: 30%;
-    animation-duration: 24s;
-    animation-delay: -14s;
 }
 
 @keyframes orbFloat {
@@ -169,11 +154,11 @@ body {
     width: 48px;
     height: 48px;
     border-radius: var(--radius-md);
-    background: var(--gradient-primary);
+    background: var(--gradient-telegram);
     display: grid;
     place-items: center;
     color: #fff;
-    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 20px rgba(41, 182, 246, 0.3);
 }
 
 .logo h1 {
@@ -216,19 +201,19 @@ body {
 }
 
 .health-badge.online .health-dot {
-    background: #4ade80;
+    background: var(--success-color);
     box-shadow: 0 0 8px rgba(74, 222, 128, 0.5);
     animation: pulse 2s ease-in-out infinite;
 }
 
 .health-badge.offline .health-dot {
-    background: #f87171;
+    background: var(--error-color);
     box-shadow: 0 0 8px rgba(248, 113, 113, 0.4);
 }
 
 .health-badge.online {
     border-color: rgba(74, 222, 128, 0.2);
-    color: #4ade80;
+    color: var(--success-color);
 }
 
 .health-badge.offline {
@@ -282,14 +267,14 @@ body {
     color: var(--telegram-color);
 }
 
-.stat-icon.whatsapp-accent {
-    background: rgba(37, 211, 102, 0.12);
-    color: var(--whatsapp-color);
+.stat-icon.success-accent {
+    background: rgba(74, 222, 128, 0.12);
+    color: var(--success-color);
 }
 
-.stat-icon.total-accent {
-    background: rgba(102, 126, 234, 0.12);
-    color: #667eea;
+.stat-icon.error-accent {
+    background: rgba(248, 113, 113, 0.12);
+    color: var(--error-color);
 }
 
 .stat-info {
@@ -351,131 +336,28 @@ body {
     letter-spacing: 0.06em;
     padding: 4px 10px;
     border-radius: 100px;
-    background: var(--gradient-primary);
+    background: var(--gradient-telegram);
     color: #fff;
 }
 
-/* ── Platform Selector ───────────────────────── */
-.platform-selector {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 10px;
+/* ── Input Group ─────────────────────────────── */
+.input-group {
     margin-bottom: 20px;
 }
 
-.platform-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 14px 16px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    background: rgba(255, 255, 255, 0.02);
-    color: var(--text-secondary);
-    font-family: inherit;
-    font-size: 0.9rem;
+.input-label {
+    display: block;
+    font-size: 0.82rem;
     font-weight: 500;
-    cursor: pointer;
-    transition: var(--transition-normal);
-    position: relative;
-    overflow: hidden;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
 }
 
-.platform-btn::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    transition: opacity var(--transition-normal);
-    border-radius: inherit;
-}
-
-.platform-btn:hover {
-    border-color: var(--border-active);
-    transform: translateY(-1px);
-}
-
-.platform-btn[data-platform="telegram"]::before {
-    background: var(--gradient-telegram);
-}
-
-.platform-btn[data-platform="whatsapp"]::before {
-    background: var(--gradient-whatsapp);
-}
-
-.platform-btn.active {
-    color: #fff;
-    border-color: transparent;
-}
-
-.platform-btn.active::before {
-    opacity: 1;
-}
-
-.platform-btn.active[data-platform="telegram"] {
-    box-shadow: var(--shadow-glow-telegram);
-}
-
-.platform-btn.active[data-platform="whatsapp"] {
-    box-shadow: var(--shadow-glow-whatsapp);
-}
-
-.platform-btn svg,
-.platform-btn span {
-    position: relative;
-    z-index: 1;
-}
-
-/* ── Recipient Fields ────────────────────────── */
 .label-hint {
     font-size: 0.72rem;
     color: var(--text-muted);
     font-weight: 400;
     margin-left: 4px;
-}
-
-.recipient-fields {
-    margin-bottom: 4px;
-}
-
-.recipient-field {
-    overflow: hidden;
-    transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-                opacity 0.3s ease,
-                margin-bottom 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-    max-height: 0;
-    opacity: 0;
-    margin-bottom: 0 !important;
-}
-
-.recipient-field.visible {
-    max-height: 120px;
-    opacity: 1;
-    margin-bottom: 16px !important;
-}
-
-.label-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 22px;
-    height: 22px;
-    border-radius: 6px;
-    margin-right: 6px;
-    vertical-align: middle;
-    position: relative;
-    top: -1px;
-}
-
-.telegram-label-icon {
-    background: rgba(41, 182, 246, 0.15);
-    color: var(--telegram-color);
-}
-
-.whatsapp-label-icon {
-    background: rgba(37, 211, 102, 0.15);
-    color: var(--whatsapp-color);
 }
 
 .input-with-icon {
@@ -500,60 +382,8 @@ body {
 }
 
 .input-with-icon input:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.12);
-}
-
-/* Telegram-specific focus glow */
-#telegram-recipient:focus {
     border-color: var(--telegram-color);
     box-shadow: 0 0 0 3px rgba(41, 182, 246, 0.12);
-}
-
-/* WhatsApp-specific focus glow */
-#whatsapp-recipient:focus {
-    border-color: var(--whatsapp-color);
-    box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.12);
-}
-
-/* History item recipient info */
-.history-item-recipient {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    margin-bottom: 3px;
-    padding: 2px 8px;
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 100px;
-    border: 1px solid rgba(255, 255, 255, 0.04);
-}
-
-.history-item-recipient svg {
-    opacity: 0.6;
-    flex-shrink: 0;
-}
-
-.platform-btn[data-platform="both"]::before {
-    background: var(--gradient-both);
-}
-
-.platform-btn.active[data-platform="both"] {
-    box-shadow: var(--shadow-glow-both);
-}
-
-/* ── Input Group ─────────────────────────────── */
-.input-group {
-    margin-bottom: 20px;
-}
-
-.input-label {
-    display: block;
-    font-size: 0.82rem;
-    font-weight: 500;
-    color: var(--text-secondary);
-    margin-bottom: 8px;
 }
 
 .textarea-wrapper {
@@ -582,8 +412,8 @@ textarea::placeholder {
 }
 
 textarea:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.12);
+    border-color: var(--telegram-color);
+    box-shadow: 0 0 0 3px rgba(41, 182, 246, 0.12);
 }
 
 .char-counter {
@@ -602,7 +432,7 @@ textarea:focus {
     padding: 15px 24px;
     border: none;
     border-radius: var(--radius-md);
-    background: var(--gradient-primary);
+    background: var(--gradient-telegram);
     color: #fff;
     font-family: inherit;
     font-size: 0.95rem;
@@ -611,12 +441,12 @@ textarea:focus {
     position: relative;
     overflow: hidden;
     transition: var(--transition-normal);
-    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.25);
+    box-shadow: var(--shadow-glow-telegram);
 }
 
 .send-btn:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.35);
+    box-shadow: 0 8px 30px rgba(41, 182, 246, 0.35);
 }
 
 .send-btn:active:not(:disabled) {
@@ -648,22 +478,6 @@ textarea:focus {
     to { transform: rotate(360deg); }
 }
 
-/* Telegram-active state */
-.send-btn.telegram-active {
-    background: var(--gradient-telegram);
-    box-shadow: var(--shadow-glow-telegram);
-}
-
-.send-btn.whatsapp-active {
-    background: var(--gradient-whatsapp);
-    box-shadow: var(--shadow-glow-whatsapp);
-}
-
-.send-btn.both-active {
-    background: var(--gradient-both);
-    box-shadow: var(--shadow-glow-both);
-}
-
 /* ── History Panel ───────────────────────────── */
 .history-panel {
     max-height: 520px;
@@ -685,7 +499,7 @@ textarea:focus {
 .clear-btn:hover {
     background: rgba(248, 113, 113, 0.1);
     border-color: rgba(248, 113, 113, 0.3);
-    color: #f87171;
+    color: var(--error-color);
 }
 
 .history-list {
@@ -764,16 +578,6 @@ textarea:focus {
     color: var(--telegram-color);
 }
 
-.history-item-icon.whatsapp {
-    background: rgba(37, 211, 102, 0.12);
-    color: var(--whatsapp-color);
-}
-
-.history-item-icon.both {
-    background: rgba(102, 126, 234, 0.12);
-    color: #667eea;
-}
-
 .history-item-body {
     flex: 1;
     min-width: 0;
@@ -790,12 +594,29 @@ textarea:focus {
 .history-item-platform {
     font-size: 0.8rem;
     font-weight: 600;
-    text-transform: capitalize;
 }
 
 .history-item-time {
     font-size: 0.7rem;
     color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.history-item-recipient {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-bottom: 3px;
+    padding: 2px 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 100px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.history-item-recipient svg {
+    opacity: 0.6;
     flex-shrink: 0;
 }
 
@@ -821,12 +642,12 @@ textarea:focus {
 
 .history-item-status.success {
     background: rgba(74, 222, 128, 0.1);
-    color: #4ade80;
+    color: var(--success-color);
 }
 
 .history-item-status.error {
     background: rgba(248, 113, 113, 0.1);
-    color: #f87171;
+    color: var(--error-color);
 }
 
 /* ── Footer ──────────────────────────────────── */
@@ -845,7 +666,7 @@ textarea:focus {
 }
 
 .app-footer a:hover {
-    color: #667eea;
+    color: var(--telegram-color);
 }
 
 /* ── Toast Notifications ─────────────────────── */
@@ -886,8 +707,8 @@ textarea:focus {
     flex-shrink: 0;
 }
 
-.toast.success .toast-icon { color: #4ade80; }
-.toast.error .toast-icon { color: #f87171; }
+.toast.success .toast-icon { color: var(--success-color); }
+.toast.error .toast-icon { color: var(--error-color); }
 .toast.info .toast-icon { color: #60a5fa; }
 
 @keyframes toastIn {
@@ -952,11 +773,5 @@ textarea:focus {
 
     .history-panel {
         max-height: none;
-    }
-}
-
-@media (max-width: 480px) {
-    .platform-selector {
-        grid-template-columns: 1fr;
     }
 }

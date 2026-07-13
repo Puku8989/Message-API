@@ -18,8 +18,6 @@ class Platform(str, Enum):
     """Supported messaging platforms."""
 
     TELEGRAM = "telegram"
-    WHATSAPP = "whatsapp"
-    BOTH = "both"
 
 
 # ── Request Models ───────────────────────────────────────────────────
@@ -28,17 +26,16 @@ class MessageRequest(BaseModel):
     """Incoming request to send a message.
 
     Attributes:
-        platform: Target platform (``telegram``, ``whatsapp``, or ``both``).
+        platform: Target platform (``telegram``).
         message: The text content to deliver.
-        recipient: Optional recipient override (chat_id for Telegram,
-            phone number in E.164 format for WhatsApp). Falls back to
-            the ``.env`` default when omitted.
+        recipient: Optional recipient override (chat ID or @username
+            for Telegram). Falls back to the ``.env`` default when omitted.
     """
 
     platform: Platform = Field(
-        ...,
+        default=Platform.TELEGRAM,
         description="Target messaging platform.",
-        examples=["telegram", "whatsapp", "both"],
+        examples=["telegram"],
     )
     message: str = Field(
         ...,
@@ -50,38 +47,17 @@ class MessageRequest(BaseModel):
     recipient: str | None = Field(
         default=None,
         description=(
-            "Optional recipient override. For Telegram: a chat ID. "
-            "For WhatsApp: a phone number in E.164 format (e.g., +1234567890). "
-            "When platform is 'both', use telegram_chat_id and "
-            "whatsapp_recipient instead for per-platform targeting."
-        ),
-        examples=["+1234567890", "123456789"],
-    )
-    telegram_chat_id: str | None = Field(
-        default=None,
-        description=(
-            "Optional Telegram chat ID override. Used when platform is "
-            "'both' to target a specific Telegram chat independently of "
-            "the WhatsApp recipient."
+            "Optional Telegram chat ID or @username override. "
+            "Falls back to the TELEGRAM_CHAT_ID in ``.env`` when omitted."
         ),
         examples=["123456789", "@username"],
-    )
-    whatsapp_recipient: str | None = Field(
-        default=None,
-        description=(
-            "Optional WhatsApp phone number override in E.164 format. "
-            "Used when platform is 'both' to target a specific WhatsApp "
-            "number independently of the Telegram chat ID."
-        ),
-        examples=["+1234567890"],
     )
 
     model_config = {
         "json_schema_extra": {
             "examples": [
                 {"platform": "telegram", "message": "Hello from the API!"},
-                {"platform": "whatsapp", "message": "Hello from the API!", "recipient": "+1234567890"},
-                {"platform": "both", "message": "Hello everywhere!"},
+                {"platform": "telegram", "message": "Hello!", "recipient": "123456789"},
             ]
         }
     }

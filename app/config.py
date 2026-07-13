@@ -17,9 +17,6 @@ class Settings(BaseSettings):
     Attributes:
         telegram_bot_token: Telegram Bot API token from @BotFather.
         telegram_chat_id: Target chat/group/channel ID for Telegram messages.
-        whatsapp_access_token: Meta Graph API access token for WhatsApp Cloud.
-        whatsapp_phone_number_id: Sender phone-number ID registered in Meta.
-        whatsapp_recipient_number: Default recipient in E.164 format.
         api_timeout: HTTP request timeout in seconds.
         max_retries: Maximum retry attempts for failed API calls.
         log_level: Python logging level string.
@@ -63,10 +60,6 @@ class Settings(BaseSettings):
             return None
         return s
 
-    # WhatsApp
-    whatsapp_access_token: str
-    whatsapp_phone_number_id: str
-    whatsapp_recipient_number: str
 
     # Application
     api_timeout: int = 30
