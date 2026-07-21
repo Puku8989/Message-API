@@ -30,10 +30,13 @@ def _mock_settings() -> Settings:
 @pytest.fixture(autouse=True)
 def _patch_settings(_mock_settings: Settings):
     """Auto-patch ``get_settings`` for every test in the suite."""
+    from app.config import get_settings
+    get_settings.cache_clear()
     with patch("app.config.get_settings", return_value=_mock_settings):
-        # Also patch in each module that imports get_settings at module level
         with patch("app.utils.get_settings", return_value=_mock_settings):
-            yield
+            with patch("app.telegram.get_settings", return_value=_mock_settings):
+                yield
+    get_settings.cache_clear()
 
 
 @pytest.fixture()
