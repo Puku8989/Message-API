@@ -1,7 +1,9 @@
-"""Application entry point.
+"""Browser-friendly application entry point.
 
-Launches the uvicorn ASGI server with sensible defaults for local
-development and production alike.
+Run with:
+    python app.py
+
+Then open http://localhost:8000 in your browser to access the dashboard or docs.
 """
 
 import uvicorn

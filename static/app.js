@@ -31,7 +31,20 @@
 
     // ── State ─────────────────────────────────────
     let history = JSON.parse(localStorage.getItem("msg_history") || "[]");
-    let stats = JSON.parse(localStorage.getItem("msg_stats") || '{"sent":0,"success":0,"failed":0}');
+    
+    function loadStats() {
+        try {
+            const raw = JSON.parse(localStorage.getItem("msg_stats"));
+            return {
+                sent: Number(raw?.sent) || 0,
+                success: Number(raw?.success) || 0,
+                failed: Number(raw?.failed) || 0,
+            };
+        } catch {
+            return { sent: 0, success: 0, failed: 0 };
+        }
+    }
+    let stats = loadStats();
     let isSending = false;
 
     // ── Initialisation ────────────────────────────
@@ -233,8 +246,13 @@
     }
 
     function animateCounter(el, target) {
+        if (!el) return;
+        const targetNum = Number(target) || 0;
         const current = parseInt(el.textContent, 10) || 0;
-        if (current === target) return;
+        if (current === targetNum) {
+            el.textContent = targetNum;
+            return;
+        }
 
         const duration = 400;
         const start = performance.now();
@@ -242,7 +260,8 @@
         function step(now) {
             const progress = Math.min((now - start) / duration, 1);
             const eased = 1 - Math.pow(1 - progress, 3);
-            el.textContent = Math.round(current + (target - current) * eased);
+            const val = Math.round(current + (targetNum - current) * eased);
+            el.textContent = Number.isNaN(val) ? 0 : val;
             if (progress < 1) requestAnimationFrame(step);
         }
 
@@ -286,6 +305,7 @@
 
     function formatTime(iso) {
         const d = new Date(iso);
+        if (Number.isNaN(d.getTime())) return "Recently";
         const now = new Date();
         const diffMs = now - d;
 
